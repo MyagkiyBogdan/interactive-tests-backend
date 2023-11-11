@@ -31,3 +31,17 @@ export const createMatchingTestQuery = `
   VALUES ($1, $2, $3)
   RETURNING id;
 `;
+
+export const addOrUpdateTestingResultQuery = `
+  INSERT INTO testing_results (correctCount, results, username, userEmail)
+  VALUES ($1, $2, $3, $4)
+  ON CONFLICT (userEmail) DO UPDATE
+  SET correctCount = EXCLUDED.correctCount,
+      results = EXCLUDED.results,
+      username = EXCLUDED.username
+  RETURNING id;
+`;
+
+export const getAllTestingResultsQuery = `
+  SELECT correctCount, results, username, userEmail FROM testing_results;
+`;

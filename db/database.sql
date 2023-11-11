@@ -47,6 +47,16 @@ CREATE TABLE matching_tests (
     matching JSONB NOT NULL
 );
 
+CREATE TABLE testing_results (
+    id SERIAL PRIMARY KEY,
+    correctCount INTEGER NOT NULL,
+    results JSONB NOT NULL,
+    username VARCHAR(255) NOT NULL,
+    userEmail VARCHAR(255) NOT NULL
+);
+
+CREATE UNIQUE INDEX idx_user_email ON testing_results (userEmail);
+
 SELECT table_name, column_name, data_type, character_maximum_length, column_default
 FROM information_schema.columns
 WHERE table_schema = 'public' AND table_catalog = 'user_tests'

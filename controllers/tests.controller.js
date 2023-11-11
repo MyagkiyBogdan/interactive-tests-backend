@@ -6,6 +6,8 @@ import {
   createFillInTheBlanksTestQuery,
   createSequencingTestQuery,
   createMatchingTestQuery,
+  addOrUpdateTestingResultQuery,
+  getAllTestingResultsQuery,
 } from "../db/tests.commands.js";
 
 export const TEST_TYPE = {
@@ -217,5 +219,54 @@ export const createMatchingTest = async (req, res) => {
   } catch (error) {
     console.error("Ошибка при создании теста:", error);
     return res.status(500).json("Ошибка при создании теста");
+  }
+};
+export const addTestingResult = async (req, res) => {
+  const { correctCount, results, username, userEmail } = req.body;
+
+  try {
+    if (!correctCount || !results || !username || !userEmail) {
+      return res
+        .status(400)
+        .json(
+          "Неправильный формат данных для добавления/обновления результата теста"
+        );
+    }
+
+    const data = {
+      correctCount,
+      results,
+      username,
+      userEmail,
+    };
+
+    const result = await db.one(addOrUpdateTestingResultQuery, [
+      data.correctCount,
+      data.results,
+      data.username,
+      data.userEmail,
+    ]);
+
+    if (result) {
+      return res.status(200).json("Результат успешно добавлен/обновлен");
+    } else {
+      return res
+        .status(500)
+        .json("Ошибка при добавлении/обновлении результата");
+    }
+  } catch (error) {
+    console.error("Ошибка при добавлении/обновлении результата:", error);
+    return res.status(500).json("Ошибка при добавлении/обновлении результата");
+  }
+};
+
+export const getAllTestingResults = async (req, res) => {
+  try {
+    const results = await db.any(getAllTestingResultsQuery);
+
+    return res.status(200).json(results);
+  } catch (error) {
+    console.error("Ошибка при получении результатов:", error);
+    return res.status(500).json("Ошибка при получении результатов");
   }
 };
